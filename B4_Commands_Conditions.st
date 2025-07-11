@@ -45,9 +45,7 @@ TON_AsmExternalSplice(
     IN := bTestEjectionContY2M,
     PT := T#2s
 );
-arst_Register[iPointerStart].AsmExternalSplice := TON_AsmExternalSplice.Q;
 
-	
 (*= 4.2 ========== Ejection conditions control  ==========*)
 bCommand :=
     bCtrlEjectionY2M AND (
