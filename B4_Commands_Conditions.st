@@ -71,21 +71,22 @@ bCommand :=
 			)
 		(*->Normal command*)
 (*9*)	OR(
-			bCigaretteON				(* Cigarette presence ON*)
+			bCigaretteON
 			AND(
-				NOT BA41M						(*Outlet jam sensor BA41M*)
+				NOT BA41M						(*No outlet jam detected by BA41M*)
 				OR Fault[322] 					(*Rolling hand jam inspection fault*)
 				OR Fault[411]					(*RESY-T inlet conveyor jam BC2R*)
-				OR NOT bASM_ProgCentralDrumEject	(*Start/Stop program*)
-				OR NOT bASM_AutomaticMode		(*Manual mode*)
-				OR NOT bASM_RunningStopMech		(*Machine stopped*)
+				OR NOT bASM_ProgCentralDrumEject	(*Central drum ejection not active*)
+				OR NOT bASM_AutomaticMode		(*Machine is in manual mode*)
+				OR NOT bASM_RunningStopMech		(*Machine not running*)
 				OR bASM_LaserEjectionCmd		(*LASER ejection*)
 				OR b_StopConditionImm			(*Immediate Stop*)
 				OR arst_Register[iPointerStart].AsmExternalSplice	(*Assembler external splice ejection*)
 				OR arst_Register[iPointerStart].AsmInternalSplice	(*Assembler internal splice ejection*)
 				OR arst_Register[iPointerStart].MakerSplice			(*Maker splice ejection*)
 				OR arst_Register[iPointerStart].bFilterMissing		(*Filter missing ejection*)
-	(*			OR arst_Register[iPointerStart].DieMissing			(*Die missing ejection*)*)	(*Tst*)
+	// TODO: Uncomment the following line if "Die missing ejection" should be included in the future
+	// OR arst_Register[iPointerStart].DieMissing			(*Die missing ejection*)
 				)
 			)
 	);
