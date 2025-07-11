@@ -33,69 +33,73 @@ END_IF
 	
 (*= 4.2 ========== Ejection conditions control  ==========*)
 bCommand :=
-	bCtrlEjectionY2M
-	AND(
-		(*->Ejection manual command continuous*)
-(*1*)	bTestEjectionContY2M
-		(*->Ejection manual command synchronous +/- cigarette*)
-(*2*)	OR bTestEjectionSyncY2M
-		(*->Ejection manual command synchronous + cigarette*)
-(*3*)	OR(
-			(bManualEjectionY2M
-				OR SI36M)
-			AND bCigaretteON		(*Cigarette presence ON*)
-			)
-		(*->Ejection command of all cigarettes at assembler restart in start program*)
-(*4*)	OR(
-			bReStartPhase			(*Ejection command with production cigarette*)
-			AND bCigaretteProd		(*Cigarette production ON*)
-			)
-		(*->Rolling hand jam inspection fault*)
-(*5*)	OR Fault[322]
-		(*->Ejection when iAssemblerSpeed in low speed*)
-(*6*)	OR(
-			(iAssemblerSpeed < 1500)
-			AND NOT Fault[191]		(*Servomotors in manual mode stopped*)
-			)
-		(*->Ejection at Start program*)
-(*7*)	OR(
-			bASM_ProgStartAbility
-			AND NOT DSCT[39].Q
-			)
-		(*->Complementary ejection on Y2M*)
-(*8*)	OR(
-			bAssemblerON
-			AND NOT bASM_ProgCentralDrumEject
-			AND bASM_RunningStopMech
-			AND DSCT[50].Q
-			)
-		(*->Normal command*)
-(*9*)	OR(
-			bCigaretteON
-			AND(
-				NOT BA41M						(*No outlet jam detected by BA41M*)
-				OR Fault[322] 					(*Rolling hand jam inspection fault*)
-				OR Fault[411]					(*RESY-T inlet conveyor jam BC2R*)
-				OR NOT bASM_ProgCentralDrumEject	(*Central drum ejection not active*)
-				OR NOT bASM_AutomaticMode		(*Machine is in manual mode*)
-				OR NOT bASM_RunningStopMech		(*Machine not running*)
-				OR bASM_LaserEjectionCmd		(*LASER ejection*)
-				OR b_StopConditionImm			(*Immediate Stop*)
-				OR arst_Register[iPointerStart].AsmExternalSplice	(*Assembler external splice ejection*)
-				OR arst_Register[iPointerStart].AsmInternalSplice	(*Assembler internal splice ejection*)
-				OR arst_Register[iPointerStart].MakerSplice			(*Maker splice ejection*)
-				OR arst_Register[iPointerStart].bFilterMissing		(*Filter missing ejection*)
-	// TODO: Uncomment the following line if "Die missing ejection" should be included in the future
-	// OR arst_Register[iPointerStart].DieMissing			(*Die missing ejection*)
-				)
-			)
-	);
-	
-	
-	
+    bCtrlEjectionY2M AND (
+        // 1. Ejection manual command continuous
+        bTestEjectionContY2M
 
-	
-	
-	
-	
-	
+        // 2. Ejection manual command synchronous +/- cigarette
+        OR bTestEjectionSyncY2M
+
+        // 3. Ejection manual command synchronous + cigarette
+        OR (
+            (bManualEjectionY2M OR SI36M)
+            AND bCigaretteON
+        )
+
+        // 4. Ejection command of all cigarettes at assembler restart in start program
+        OR (
+            bReStartPhase
+            AND bCigaretteProd
+        )
+
+        // 5. Rolling hand jam inspection fault
+        OR Fault[322]
+
+        // 6. Ejection when iAssemblerSpeed in low speed
+        OR (
+            (iAssemblerSpeed < 1500)
+            AND NOT Fault[191]
+        )
+
+        // 7. Ejection at Start program
+        OR (
+            bASM_ProgStartAbility
+            AND NOT DSCT[39].Q
+        )
+
+        // 8. Complementary ejection on Y2M
+        OR (
+            bAssemblerON
+            AND NOT bASM_ProgCentralDrumEject
+            AND bASM_RunningStopMech
+            AND DSCT[50].Q
+        )
+
+        // 9. Normal command
+        OR (
+            bCigaretteON AND (
+                NOT BA41M
+                OR Fault[322]
+                OR Fault[411]
+                OR NOT bASM_ProgCentralDrumEject
+                OR NOT bASM_AutomaticMode
+                OR NOT bASM_RunningStopMech
+                OR bASM_LaserEjectionCmd
+                OR b_StopConditionImm
+                OR arst_Register[iPointerStart].AsmExternalSplice
+                OR arst_Register[iPointerStart].AsmInternalSplice
+                OR arst_Register[iPointerStart].MakerSplice
+                OR arst_Register[iPointerStart].bFilterMissing
+                // TODO: Uncomment if needed
+                // OR arst_Register[iPointerStart].DieMissing
+            )
+        )
+    );
+
+
+
+
+
+
+
+
