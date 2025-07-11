@@ -40,6 +40,13 @@ IF tnTestEjectionSync.Q OR bASM_RunningStopMech THEN
     bTestEjectionSyncY2M := FALSE;
 END_IF
 
+TON_AsmExternalSplice : TON;
+TON_AsmExternalSplice(
+    IN := bTestEjectionContY2M,
+    PT := T#2s
+);
+arst_Register[iPointerStart].AsmExternalSplice := TON_AsmExternalSplice.Q;
+
 	
 (*= 4.2 ========== Ejection conditions control  ==========*)
 bCommand :=
