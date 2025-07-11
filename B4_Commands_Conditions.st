@@ -43,7 +43,7 @@ END_IF
 TON_AsmExternalSplice : TON;
 TON_AsmExternalSplice(
     IN := bTestEjectionContY2M,
-    PT := T#15s
+    PT := T#30s
 );
 
 (*= 4.2 ========== Ejection conditions control  ==========*)
