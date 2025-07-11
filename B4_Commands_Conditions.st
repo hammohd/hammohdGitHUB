@@ -34,48 +34,14 @@ END_IF
 (*= 4.2 ========== Ejection conditions control  ==========*)
 bCommand :=
     bCtrlEjectionY2M AND (
-        // 1. Ejection manual command continuous
         bTestEjectionContY2M
-
-        // 2. Ejection manual command synchronous +/- cigarette
         OR bTestEjectionSyncY2M
-
-        // 3. Ejection manual command synchronous + cigarette
-        OR (
-            (bManualEjectionY2M OR SI36M)
-            AND bCigaretteON
-        )
-
-        // 4. Ejection command of all cigarettes at assembler restart in start program
-        OR (
-            bReStartPhase
-            AND bCigaretteProd
-        )
-
-        // 5. Rolling hand jam inspection fault
+        OR ((bManualEjectionY2M OR SI36M) AND bCigaretteON)
+        OR (bReStartPhase AND bCigaretteProd)
         OR Fault[322]
-
-        // 6. Ejection when iAssemblerSpeed in low speed
-        OR (
-            (iAssemblerSpeed < 1500)
-            AND NOT Fault[191]
-        )
-
-        // 7. Ejection at Start program
-        OR (
-            bASM_ProgStartAbility
-            AND NOT DSCT[39].Q
-        )
-
-        // 8. Complementary ejection on Y2M
-        OR (
-            bAssemblerON
-            AND NOT bASM_ProgCentralDrumEject
-            AND bASM_RunningStopMech
-            AND DSCT[50].Q
-        )
-
-        // 9. Normal command
+        OR ((iAssemblerSpeed < 1500) AND NOT Fault[191])
+        OR (bASM_ProgStartAbility AND NOT DSCT[39].Q)
+        OR (bAssemblerON AND NOT bASM_ProgCentralDrumEject AND bASM_RunningStopMech AND DSCT[50].Q)
         OR (
             bCigaretteON AND (
                 NOT BA41M
@@ -90,7 +56,6 @@ bCommand :=
                 OR arst_Register[iPointerStart].AsmInternalSplice
                 OR arst_Register[iPointerStart].MakerSplice
                 OR arst_Register[iPointerStart].bFilterMissing
-                // TODO: Uncomment if needed
                 // OR arst_Register[iPointerStart].DieMissing
             )
         )
