@@ -2,32 +2,42 @@
 (*Ejection command of all cigarettes at assembler restart at assembler start program*)
 rtVM_ProdStart(CLK:= bAssemblerON AND (bASM_RunningStopMech OR bVM_InchRunMech), Q=> );
 
-(*Command at assembler automatic start program control*)
-IF rtVM_ProdStart.Q THEN	(*VM in production or inch mode *)
-	FOR  iLoop := arst_Register_Pointer.Y1M TO arst_Register_Pointer.Y2M BY 1 DO	(*Synchro DCP*)
-		IF arst_Register[iLoop].bCigaretteProd THEN
-			bReStartPhase := TRUE;	(*Ejection command with production cigarette*)
-			iLastCig := iLoop;		(*Last cigarette position in the register*)
-			EXIT;	(*One cigarette found between assembler inlet and ejection*)
-		END_IF
-	END_FOR
-ELSIF bASM_ProgCentralDrumEject OR(iLastCig >= arst_Register_Pointer.Y2M) THEN
-	bReStartPhase := FALSE;		(*Ejection command with production cigarette*)
+(* Command at assembler automatic start program control *)
+IF rtVM_ProdStart.Q THEN
+    (* Check for production cigarette between inlet and ejection *)
+    FOR iLoop := arst_Register_Pointer.Y1M TO arst_Register_Pointer.Y2M DO
+        IF arst_Register[iLoop].bCigaretteProd THEN
+            bReStartPhase := TRUE;
+            iLastCig := iLoop;
+            EXIT;
+        END_IF
+    END_FOR
+ELSE
+    IF bASM_ProgCentralDrumEject OR (iLastCig >= arst_Register_Pointer.Y2M) THEN
+        bReStartPhase := FALSE;
+    END_IF
 END_IF
 
+(* Increment last cigarette position if needed *)
 IF rtDCP.Q AND bReStartPhase THEN
-	iLastCig := iLastCig + 2;
+    iLastCig := iLastCig + 2;
 END_IF
 
-(*= 4.1 ========== Test ejection conditions control  ==========*)
-tnTestEjectionCont(IN:= bTestEjectionContY2M AND NOT bASM_RunningStopMech, PT:= T#30S, Q=> , ET=> );
+(* Test ejection conditions control *)
+tnTestEjectionCont(
+    IN := bTestEjectionContY2M AND NOT bASM_RunningStopMech,
+    PT := T#30S
+);
 IF tnTestEjectionCont.Q OR bASM_RunningStopMech THEN
-	bTestEjectionContY2M := FALSE;
+    bTestEjectionContY2M := FALSE;
 END_IF
 
-tnTestEjectionSync(IN:= bTestEjectionSyncY2M AND NOT bASM_RunningStopMech, PT:= T#30S, Q=> , ET=> );
+tnTestEjectionSync(
+    IN := bTestEjectionSyncY2M AND NOT bASM_RunningStopMech,
+    PT := T#30S
+);
 IF tnTestEjectionSync.Q OR bASM_RunningStopMech THEN
-	bTestEjectionSyncY2M := FALSE;
+    bTestEjectionSyncY2M := FALSE;
 END_IF
 
 	
